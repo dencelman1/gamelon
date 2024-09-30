@@ -315,7 +315,7 @@ class Http {
                         let bFirstItem = true;
 
                         // Loop round each entry in the map and encode them into the post data
-                        for (const key in options.postdata) {
+                        for (var key in options.postdata) {
                             if (options.postdata.hasOwnProperty(key)) {
                                 if (bFirstItem) {
                                     bFirstItem = false;
@@ -323,8 +323,8 @@ class Http {
                                     postdata += '&';
                                 }
 
-                                const encodedKey = encodeURIComponent(key);
-                                const encodedValue = encodeURIComponent(options.postdata[key]);
+                                var encodedKey = encodeURIComponent(key);
+                                var encodedValue = encodeURIComponent(options.postdata[key]);
                                 postdata += `${encodedKey}=${encodedValue}`;
                             }
                         }
@@ -345,7 +345,7 @@ class Http {
 
         if (options.cache === false) {
             // Add timestamp to url to prevent browser caching file
-            const timestamp = now();
+            var timestamp = now();
 
             uri = new URI(url);
             if (!uri.query) {
@@ -363,13 +363,13 @@ class Http {
             url = uri.toString();
         }
 
-        const xhr = new XMLHttpRequest();
+        var xhr = new XMLHttpRequest();
         xhr.open(method, url, options.async);
         xhr.withCredentials = options.withCredentials !== undefined ? options.withCredentials : false;
         xhr.responseType = options.responseType || this._guessResponseType(url);
 
         // Set the http headers
-        for (const header in options.headers) {
+        for (var header in options.headers) {
             if (options.headers.hasOwnProperty(header)) {
                 xhr.setRequestHeader(header, options.headers[header]);
             }
@@ -399,8 +399,8 @@ class Http {
     }
 
     _guessResponseType(url) {
-        const uri = new URI(url);
-        const ext = path.getExtension(uri.path).toLowerCase();
+        var uri = new URI(url);
+        var ext = path.getExtension(uri.path).toLowerCase();
 
         if (Http.binaryExtensions.indexOf(ext) >= 0) {
             return Http.ResponseType.ARRAY_BUFFER;
@@ -414,7 +414,7 @@ class Http {
     }
 
     _isBinaryContentType(contentType) {
-        const binTypes = [
+        var binTypes = [
             Http.ContentType.BASIS,
             Http.ContentType.BIN,
             Http.ContentType.DDS,
@@ -473,10 +473,10 @@ class Http {
     _onSuccess(method, url, options, xhr) {
         let response;
         let contentType;
-        const header = xhr.getResponseHeader('Content-Type');
+        var header = xhr.getResponseHeader('Content-Type');
         if (header) {
             // Split up header into content type and parameter
-            const parts = header.split(';');
+            var parts = header.split(';');
             contentType = parts[0].trim();
         }
         try {
@@ -510,7 +510,7 @@ class Http {
         if (options.retry && options.retries < options.maxRetries) {
             options.retries++;
             options.retrying = true; // used to stop retrying when both onError and xhr.onerror are called
-            const retryDelay = math.clamp(Math.pow(2, options.retries) * Http.retryDelay, 0, options.maxRetryDelay || 5000);
+            var retryDelay = math.clamp(Math.pow(2, options.retries) * Http.retryDelay, 0, options.maxRetryDelay || 5000);
             console.log(`${method}: ${url} - Error ${xhr.status}. Retrying in ${retryDelay} ms`);
 
             setTimeout(() => {
@@ -524,6 +524,6 @@ class Http {
     }
 }
 
-const http = new Http();
+var http = new Http();
 
 export { http, Http };

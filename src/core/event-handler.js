@@ -18,7 +18,7 @@ import { EventHandle } from './event-handle.js';
  * Abstract base class that implements functionality for event handling.
  *
  * ```javascript
- * const obj = new EventHandlerSubclass();
+ * var obj = new EventHandlerSubclass();
  *
  * // subscribe to an event
  * obj.on('hello', (str) => {
@@ -77,13 +77,13 @@ class EventHandler {
         // if we are adding a callback to the list that is executing right now
         // ensure we preserve initial list before modifications
         if (this._callbackActive.has(name)) {
-            const callbackActive = this._callbackActive.get(name);
+            var callbackActive = this._callbackActive.get(name);
             if (callbackActive && callbackActive === this._callbacks.get(name)) {
                 this._callbackActive.set(name, callbackActive.slice());
             }
         }
 
-        const evt = new EventHandle(this, name, callback, scope, once);
+        var evt = new EventHandle(this, name, callback, scope, once);
         this._callbacks.get(name).push(evt);
         return evt;
     }
@@ -103,7 +103,7 @@ class EventHandler {
      * });
      * obj.fire('test', 1, 2); // prints 3 to the console
      * @example
-     * const evt = obj.on('test', (a, b) => {
+     * var evt = obj.on('test', (a, b) => {
      *     console.log(a + b);
      * });
      * // some time later
@@ -143,7 +143,7 @@ class EventHandler {
      * @param {object} [scope] - Scope that was used as the this when the event is fired.
      * @returns {EventHandler} Self for chaining.
      * @example
-     * const handler = () => {};
+     * var handler = () => {};
      * obj.on('test', handler);
      *
      * obj.off(); // Removes all events
@@ -161,7 +161,7 @@ class EventHandler {
         } else {
             // if we are removing a callback from any list that is executing right now
             // ensure we preserve these initial lists before modifications
-            for (const [key, callbacks] of this._callbackActive) {
+            for (var [key, callbacks] of this._callbackActive) {
                 if (!this._callbacks.has(key)) {
                     continue;
                 }
@@ -176,7 +176,7 @@ class EventHandler {
 
         if (!name) {
             // remove all events
-            for (const callbacks of this._callbacks.values()) {
+            for (var callbacks of this._callbacks.values()) {
                 for (let i = 0; i < callbacks.length; i++) {
                     callbacks[i].removed = true;
                 }
@@ -184,7 +184,7 @@ class EventHandler {
             this._callbacks.clear();
         } else if (!callback) {
             // remove all events of a specific name
-            const callbacks = this._callbacks.get(name);
+            var callbacks = this._callbacks.get(name);
             if (callbacks) {
                 for (let i = 0; i < callbacks.length; i++) {
                     callbacks[i].removed = true;
@@ -192,7 +192,7 @@ class EventHandler {
                 this._callbacks.delete(name);
             }
         } else {
-            const callbacks = this._callbacks.get(name);
+            var callbacks = this._callbacks.get(name);
             if (!callbacks) {
                 return this;
             }
@@ -242,7 +242,7 @@ class EventHandler {
             return this;
         }
 
-        const callbacksInitial = this._callbacks.get(name);
+        var callbacksInitial = this._callbacks.get(name);
         if (!callbacksInitial) {
             return this;
         }
@@ -261,22 +261,22 @@ class EventHandler {
 
         // eslint-disable-next-line no-unmodified-loop-condition
         for (let i = 0; (callbacks || this._callbackActive.get(name)) && (i < (callbacks || this._callbackActive.get(name)).length); i++) {
-            const evt = (callbacks || this._callbackActive.get(name))[i];
+            var evt = (callbacks || this._callbackActive.get(name))[i];
             if (!evt.callback) continue;
 
             evt.callback.call(evt.scope, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 
             if (evt._once) {
                 // check that callback still exists because user may have unsubscribed in the event handler
-                const existingCallback = this._callbacks.get(name);
-                const ind = existingCallback ? existingCallback.indexOf(evt) : -1;
+                var existingCallback = this._callbacks.get(name);
+                var ind = existingCallback ? existingCallback.indexOf(evt) : -1;
 
                 if (ind !== -1) {
                     if (this._callbackActive.get(name) === existingCallback) {
                         this._callbackActive.set(name, this._callbackActive.get(name).slice());
                     }
 
-                    const callbacks = this._callbacks.get(name);
+                    var callbacks = this._callbacks.get(name);
                     if (!callbacks) continue;
                     callbacks[ind].removed = true;
                     callbacks.splice(ind, 1);

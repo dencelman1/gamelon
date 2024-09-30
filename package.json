@@ -1,9 +1,9 @@
 {
-  "name": "playcanvas",
-  "version": "2.1.0-dev",
-  "author": "PlayCanvas <support@playcanvas.com>",
-  "homepage": "https://playcanvas.com",
-  "description": "PlayCanvas WebGL game engine",
+  "name": "gamelon",
+  "version": "1.0.8",
+  "author": "dencelman@gmail.com",
+  "homepage": "https://github.com/dencelman1/gamelon",
+  "description": "Gamelon WebGL game engine",
   "keywords": [
     "2d",
     "3d",
@@ -14,9 +14,8 @@
     "gltf",
     "html5",
     "javascript",
-    "playcanvas",
+    "gamelon",
     "splatting",
-    "typescript",
     "vr",
     "webgl",
     "webgl2",
@@ -49,11 +48,11 @@
   "sideEffects": false,
   "type": "module",
   "bugs": {
-    "url": "https://github.com/playcanvas/engine/issues"
+    "url": "https://github.com/dencelman1/gamelon"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/playcanvas/engine.git"
+    "url": "https://github.com/dencelman1/gamelon.git"
   },
   "files": [
     "build/playcanvas*",

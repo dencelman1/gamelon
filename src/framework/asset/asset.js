@@ -543,23 +543,29 @@ class Asset extends EventHandler {
      * app.assets.load(asset);
      */
     ready(callback, scope) {
-        scope = scope || this;
-
-        if (this.loaded) {
-            callback.call(scope, this);
-        } else {
-            this.once('load', (asset) => {
-                callback.call(scope, asset);
-            });
-        }
+        scope ||= this;
+        return (
+            (this.loaded)
+            ? callback.call(scope, this)
+            : (
+                this.once('load', (asset) => {
+                    callback.call(scope, asset);
+                })
+            ),
+            this
+        );
     }
 
     reload() {
-        // no need to be reloaded
-        if (this.loaded) {
-            this.loaded = false;
-            this.registry.load(this);
-        }
+        return (
+            (this.loaded)
+            &&
+            (
+                (this.loaded = false),
+                this.registry.load(this)
+            ),
+            this
+        );
     }
 
     /**

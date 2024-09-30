@@ -59,15 +59,15 @@ class AssetRegistry extends EventHandler {
      *     console.log(`Asset loaded: ${asset.name}`);
      * });
      * @example
-     * const id = 123456;
-     * const asset = app.assets.get(id);
+     * var id = 123456;
+     * var asset = app.assets.get(id);
      * app.assets.on('load:' + id, (asset) => {
      *     console.log(`Asset loaded: ${asset.name}`);
      * });
      * app.assets.load(asset);
      * @example
-     * const id = 123456;
-     * const asset = app.assets.get(id);
+     * var id = 123456;
+     * var asset = app.assets.get(id);
      * app.assets.on('load:url:' + asset.file.url, (asset) => {
      *     console.log(`Asset loaded: ${asset.name}`);
      * });
@@ -91,13 +91,13 @@ class AssetRegistry extends EventHandler {
      *    console.log(`Asset added: ${asset.name}`);
      * });
      * @example
-     * const id = 123456;
+     * var id = 123456;
      * app.assets.on('add:' + id, (asset) => {
      *    console.log(`Asset added: ${asset.name}`);
      * });
      * @example
-     * const id = 123456;
-     * const asset = app.assets.get(id);
+     * var id = 123456;
+     * var asset = app.assets.get(id);
      * app.assets.on('add:url:' + asset.file.url, (asset) => {
      *    console.log(`Asset added: ${asset.name}`);
      * });
@@ -121,13 +121,13 @@ class AssetRegistry extends EventHandler {
      *    console.log(`Asset removed: ${asset.name}`);
      * });
      * @example
-     * const id = 123456;
+     * var id = 123456;
      * app.assets.on('remove:' + id, (asset) => {
      *    console.log(`Asset removed: ${asset.name}`);
      * });
      * @example
-     * const id = 123456;
-     * const asset = app.assets.get(id);
+     * var id = 123456;
+     * var asset = app.assets.get(id);
      * app.assets.on('remove:url:' + asset.file.url, (asset) => {
      *    console.log(`Asset removed: ${asset.name}`);
      * });
@@ -144,15 +144,15 @@ class AssetRegistry extends EventHandler {
      *
      * @event
      * @example
-     * const id = 123456;
-     * const asset = app.assets.get(id);
+     * var id = 123456;
+     * var asset = app.assets.get(id);
      * app.assets.on('error', (err, asset) => {
      *     console.error(err);
      * });
      * app.assets.load(asset);
      * @example
-     * const id = 123456;
-     * const asset = app.assets.get(id);
+     * var id = 123456;
+     * var asset = app.assets.get(id);
      * app.assets.on('error:' + id, (err, asset) => {
      *     console.error(err);
      * });
@@ -230,7 +230,7 @@ class AssetRegistry extends EventHandler {
      * @returns {Asset[]} The filtered list of assets.
      */
     list(filters = {}) {
-        const assets = Array.from(this._assets);
+        var assets = Array.from(this._assets);
         if (filters.preload !== undefined) {
             return assets.filter(asset => asset.preload === filters.preload);
         }
@@ -242,7 +242,7 @@ class AssetRegistry extends EventHandler {
      *
      * @param {Asset} asset - The asset to add.
      * @example
-     * const asset = new pc.Asset("My Asset", "texture", {
+     * var asset = new pc.Asset("My Asset", "texture", {
      *     url: "../path/to/image.jpg"
      * });
      * app.assets.add(asset);
@@ -290,7 +290,7 @@ class AssetRegistry extends EventHandler {
      * @param {Asset} asset - The asset to remove.
      * @returns {boolean} True if the asset was successfully removed and false otherwise.
      * @example
-     * const asset = app.assets.get(100);
+     * var asset = app.assets.get(100);
      * app.assets.remove(asset);
      */
     remove(asset) {
@@ -307,7 +307,7 @@ class AssetRegistry extends EventHandler {
         asset.off('name', this._onNameChange, this);
 
         if (this._nameToAsset.has(asset.name)) {
-            const items = this._nameToAsset.get(asset.name);
+            var items = this._nameToAsset.get(asset.name);
             items.delete(asset);
             if (items.size === 0) {
                 this._nameToAsset.delete(asset.name);
@@ -335,7 +335,7 @@ class AssetRegistry extends EventHandler {
      * @param {number} id - The id of the asset to get.
      * @returns {Asset|undefined} The asset.
      * @example
-     * const asset = app.assets.get(100);
+     * var asset = app.assets.get(100);
      */
     get(id) {
         // Since some apps incorrectly pass the id as a string, force a conversion to a number
@@ -348,54 +348,20 @@ class AssetRegistry extends EventHandler {
      * @param {string} url - The url of the asset to get.
      * @returns {Asset|undefined} The asset.
      * @example
-     * const asset = app.assets.getByUrl("../path/to/image.jpg");
+     * var asset = app.assets.getByUrl("../path/to/image.jpg");
      */
     getByUrl(url) {
         return this._urlToAsset.get(url);
     }
 
-    /**
-     * Load the asset's file from a remote source. Listen for `load` events on the asset to find
-     * out when it is loaded.
-     *
-     * @param {Asset} asset - The asset to load.
-     * @param {object} [options] - Options for asset loading.
-     * @param {boolean} [options.bundlesIgnore] - If set to true, then asset will not try to load
-     * from a bundle. Defaults to false.
-     * @param {boolean} [options.force] - If set to true, then the check of asset being loaded or
-     * is already loaded is bypassed, which forces loading of asset regardless.
-     * @param {BundlesFilterCallback} [options.bundlesFilter] - A callback that will be called
-     * when loading an asset that is contained in any of the bundles. It provides an array of
-     * bundles and will ensure asset is loaded from bundle returned from a callback. By default
-     * smallest filesize bundle is chosen.
-     * @example
-     * // load some assets
-     * const assetsToLoad = [
-     *     app.assets.find("My Asset"),
-     *     app.assets.find("Another Asset")
-     * ];
-     * let count = 0;
-     * assetsToLoad.forEach(function (assetToLoad) {
-     *     assetToLoad.ready(function (asset) {
-     *         count++;
-     *         if (count === assetsToLoad.length) {
-     *             // done
-     *         }
-     *     });
-     *     app.assets.load(assetToLoad);
-     * });
-     */
     load(asset, options) {
-        // do nothing if asset is already loaded
-        // note: lots of code calls assets.load() assuming this check is present
-        // don't remove it without updating calls to assets.load() with checks for the asset.loaded state
         if ((asset.loading || asset.loaded) && !options?.force) {
             return;
         }
 
-        const file = asset.file;
+        var file = asset.file;
 
-        const _fireLoad = () => {
+        var _fireLoad = () => {
             this.fire('load', asset);
             this.fire(`load:${asset.id}`, asset);
             if (file && file.url) {
@@ -405,20 +371,20 @@ class AssetRegistry extends EventHandler {
         };
 
         // open has completed on the resource
-        const _opened = (resource) => {
+        var _opened = (resource) => {
             if (resource instanceof Array) {
                 asset.resources = resource;
             } else {
                 asset.resource = resource;
             }
 
-            // let handler patch the resource
+            // var handler patch the resource
             this._loader.patch(asset, this);
 
             if (asset.type === 'bundle') {
-                const assetIds = asset.data.assets;
-                for (let i = 0; i < assetIds.length; i++) {
-                    const assetInBundle = this._idToAsset.get(assetIds[i]);
+                var assetIds = asset.data.assets;
+                for (var i = 0; i < assetIds.length; i++) {
+                    var assetInBundle = this._idToAsset.get(assetIds[i]);
                     if (assetInBundle && !assetInBundle.loaded) {
                         this.load(assetInBundle, { force: true });
                     }
@@ -441,7 +407,7 @@ class AssetRegistry extends EventHandler {
         };
 
         // load has completed on the resource
-        const _loaded = (err, resource, extra) => {
+        var _loaded = (err, resource, extra) => {
             asset.loaded = true;
             asset.loading = false;
 
@@ -451,7 +417,7 @@ class AssetRegistry extends EventHandler {
                 asset.fire('error', err, asset);
             } else {
                 if (asset.type === 'script') {
-                    const handler = this._loader.getHandler('script');
+                    var handler = this._loader.getHandler('script');
                     if (handler._cache[asset.id] && handler._cache[asset.id].parentNode === document.head) {
                         // remove old element
                         document.head.removeChild(handler._cache[asset.id]);
@@ -470,13 +436,13 @@ class AssetRegistry extends EventHandler {
 
             asset.loading = true;
 
-            const fileUrl = asset.getFileUrl();
+            var fileUrl = asset.getFileUrl();
 
             // mark bundle assets as loading
             if (asset.type === 'bundle') {
-                const assetIds = asset.data.assets;
-                for (let i = 0; i < assetIds.length; i++) {
-                    const assetInBundle = this._idToAsset.get(assetIds[i]);
+                var assetIds = asset.data.assets;
+                for (var i = 0; i < assetIds.length; i++) {
+                    var assetInBundle = this._idToAsset.get(assetIds[i]);
                     if (!assetInBundle) {
                         continue;
                     }
@@ -493,7 +459,7 @@ class AssetRegistry extends EventHandler {
             this._loader.load(fileUrl, asset.type, _loaded, asset, options);
         } else {
             // asset has no file to load, open it directly
-            const resource = this._loader.open(asset.type, asset.data);
+            var resource = this._loader.open(asset.type, asset.data);
             asset.loaded = true;
             _opened(resource);
         }
@@ -509,11 +475,11 @@ class AssetRegistry extends EventHandler {
      * asset), where err is null if no errors were encountered.
      * @example
      * app.assets.loadFromUrl("../path/to/texture.jpg", "texture", function (err, asset) {
-     *     const texture = asset.resource;
+     *     var texture = asset.resource;
      * });
      */
     loadFromUrl(url, type, callback) {
-        this.loadFromUrlAndFilename(url, null, type, callback);
+        return this.loadFromUrlAndFilename(url, path.getBasename(url), type, callback);
     }
 
     /**
@@ -527,30 +493,26 @@ class AssetRegistry extends EventHandler {
      * @param {LoadAssetCallback} callback - Function called when asset is loaded, passed (err,
      * asset), where err is null if no errors were encountered.
      * @example
-     * const file = magicallyObtainAFile();
+     * var file = magicallyObtainAFile();
      * app.assets.loadFromUrlAndFilename(URL.createObjectURL(file), "texture.png", "texture", function (err, asset) {
-     *     const texture = asset.resource;
+     *     var texture = asset.resource;
      * });
      */
     loadFromUrlAndFilename(url, filename, type, callback) {
-        const name = path.getBasename(filename || url);
-
-        const file = {
-            filename: filename || name,
-            url: url
-        };
-
-        let asset = this.getByUrl(url);
+        
+        var
+            file = { filename, url },
+            asset = this.getByUrl(url)
+        ;
         if (!asset) {
             asset = new Asset(name, type, file);
             this.add(asset);
         } else if (asset.loaded) {
-            // asset is already loaded
             callback(asset.loadFromUrlError || null, asset);
             return;
         }
 
-        const startLoad = (asset) => {
+        var startLoad = (asset) => {
             asset.once('load', (loadedAsset) => {
                 if (type === 'material') {
                     this._loadTextures(loadedAsset, (err, textures) => {
@@ -581,15 +543,15 @@ class AssetRegistry extends EventHandler {
 
     // private method used for engine-only loading of model data
     _loadModel(modelAsset, continuation) {
-        const url = modelAsset.getFileUrl();
-        const ext = path.getExtension(url);
+        var url = modelAsset.getFileUrl();
+        var ext = path.getExtension(url);
 
         if (ext === '.json' || ext === '.glb') {
-            const dir = path.getDirectory(url);
-            const basename = path.getBasename(url);
+            var dir = path.getDirectory(url);
+            var basename = path.getBasename(url);
 
             // PlayCanvas model format supports material mapping file
-            const mappingUrl = path.join(dir, basename.replace(ext, '.mapping.json'));
+            var mappingUrl = path.join(dir, basename.replace(ext, '.mapping.json'));
             this._loader.load(mappingUrl, 'json', (err, data) => {
                 if (err) {
                     modelAsset.data = { mapping: [] };
@@ -609,10 +571,10 @@ class AssetRegistry extends EventHandler {
 
     // private method used for engine-only loading of model materials
     _loadMaterials(modelAsset, mapping, callback) {
-        const materials = [];
-        let count = 0;
+        var materials = [];
+        var count = 0;
 
-        const onMaterialLoaded = (err, materialAsset) => {
+        var onMaterialLoaded = (err, materialAsset) => {
             // load dependent textures
             this._loadTextures(materialAsset, (err, textures) => {
                 materials.push(materialAsset);
@@ -622,11 +584,11 @@ class AssetRegistry extends EventHandler {
             });
         };
 
-        for (let i = 0; i < mapping.mapping.length; i++) {
-            const path = mapping.mapping[i].path;
+        for (var i = 0; i < mapping.mapping.length; i++) {
+            var path = mapping.mapping[i].path;
             if (path) {
                 count++;
-                const url = modelAsset.getAbsoluteUrl(path);
+                var url = modelAsset.getAbsoluteUrl(path);
                 this.loadFromUrl(url, 'material', onMaterialLoaded);
             }
         }
@@ -639,17 +601,17 @@ class AssetRegistry extends EventHandler {
     // private method used for engine-only loading of the textures referenced by
     // the material asset
     _loadTextures(materialAsset, callback) {
-        const textures = [];
-        let count = 0;
+        var textures = [];
+        var count = 0;
 
-        const data = materialAsset.data;
+        var data = materialAsset.data;
         if (data.mappingFormat !== 'path') {
             Debug.warn(`Skipping: ${materialAsset.name}, material files must be mappingFormat: "path" to be loaded from URL`);
             callback(null, textures);
             return;
         }
 
-        const onTextureLoaded = (err, texture) => {
+        var onTextureLoaded = (err, texture) => {
             if (err) console.error(err);
             textures.push(texture);
             if (textures.length === count) {
@@ -657,12 +619,12 @@ class AssetRegistry extends EventHandler {
             }
         };
 
-        const texParams = standardMaterialTextureParameters;
-        for (let i = 0; i < texParams.length; i++) {
-            const path = data[texParams[i]];
+        var texParams = standardMaterialTextureParameters;
+        for (var i = 0; i < texParams.length; i++) {
+            var path = data[texParams[i]];
             if (path && typeof path === 'string') {
                 count++;
-                const url = materialAsset.getAbsoluteUrl(path);
+                var url = materialAsset.getAbsoluteUrl(path);
                 this.loadFromUrl(url, 'texture', onTextureLoaded);
             }
         }
@@ -683,7 +645,7 @@ class AssetRegistry extends EventHandler {
     _onNameChange(asset, name, nameOld) {
         // remove
         if (this._nameToAsset.has(nameOld)) {
-            const items = this._nameToAsset.get(nameOld);
+            var items = this._nameToAsset.get(nameOld);
             items.delete(asset);
             if (items.size === 0) {
                 this._nameToAsset.delete(nameOld);
@@ -707,16 +669,16 @@ class AssetRegistry extends EventHandler {
      * @param {...*} query - Name of a tag or array of tags.
      * @returns {Asset[]} A list of all Assets matched query.
      * @example
-     * const assets = app.assets.findByTag("level-1");
+     * var assets = app.assets.findByTag("level-1");
      * // returns all assets that tagged by `level-1`
      * @example
-     * const assets = app.assets.findByTag("level-1", "level-2");
+     * var assets = app.assets.findByTag("level-1", "level-2");
      * // returns all assets that tagged by `level-1` OR `level-2`
      * @example
-     * const assets = app.assets.findByTag(["level-1", "monster"]);
+     * var assets = app.assets.findByTag(["level-1", "monster"]);
      * // returns all assets that tagged by `level-1` AND `monster`
      * @example
-     * const assets = app.assets.findByTag(["level-1", "monster"], ["level-2", "monster"]);
+     * var assets = app.assets.findByTag(["level-1", "monster"], ["level-2", "monster"]);
      * // returns all assets that tagged by (`level-1` AND `monster`) OR (`level-2` AND `monster`)
      */
     findByTag(...query) {
@@ -730,7 +692,7 @@ class AssetRegistry extends EventHandler {
      * Return `true` to include an asset in the returned array.
      * @returns {Asset[]} A list of all Assets found.
      * @example
-     * const assets = app.assets.filter(asset => asset.name.includes('monster'));
+     * var assets = app.assets.filter(asset => asset.name.includes('monster'));
      * console.log(`Found ${assets.length} assets with a name containing 'monster'`);
      */
     filter(callback) {
@@ -744,13 +706,13 @@ class AssetRegistry extends EventHandler {
      * @param {string} [type] - The type of the Asset to find.
      * @returns {Asset|null} A single Asset or null if no Asset is found.
      * @example
-     * const asset = app.assets.find("myTextureAsset", "texture");
+     * var asset = app.assets.find("myTextureAsset", "texture");
      */
     find(name, type) {
-        const items = this._nameToAsset.get(name);
+        var items = this._nameToAsset.get(name);
         if (!items) return null;
 
-        for (const asset of items) {
+        for (var asset of items) {
             if (!type || asset.type === type) {
                 return asset;
             }
@@ -766,13 +728,13 @@ class AssetRegistry extends EventHandler {
      * @param {string} [type] - The type of the Assets to find.
      * @returns {Asset[]} A list of all Assets found.
      * @example
-     * const assets = app.assets.findAll('brick', 'texture');
+     * var assets = app.assets.findAll('brick', 'texture');
      * console.log(`Found ${assets.length} texture assets named 'brick'`);
      */
     findAll(name, type) {
-        const items = this._nameToAsset.get(name);
+        var items = this._nameToAsset.get(name);
         if (!items) return [];
-        const results = Array.from(items);
+        var results = Array.from(items);
         if (!type) return results;
         return results.filter(asset => asset.type === type);
     }
